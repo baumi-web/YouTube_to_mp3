@@ -3,7 +3,19 @@ Dazu muss man nach Starten des Skripts nur den Link in der Konsole eingeben und 
 
 ## Requirements
 
+#### install ffmpeg
+ https://ffmpeg.org/download.html <br>
 
+ mit MacOS
+ ```bash
+ brew install ffmpeg
+```
+
+#### install  yt-dlp in your envirement
 ```bash
 pip install yt-dlp
+```
+or
+```bash
+python3 -m pip install yt-dlp
 ```
