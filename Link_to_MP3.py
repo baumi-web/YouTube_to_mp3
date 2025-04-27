@@ -1,30 +1,29 @@
-from pytube import YouTube
 import os
-from pydub import AudioSegment
 from pathlib import Path
+import yt_dlp
 
 def download_audio_as_mp3(youtube_url, save_name):
-    yt = YouTube(youtube_url)
-    stream = yt.streams.filter(only_audio=True).first()
+    downloads_path = str(Path.home() / "Downloads")  # Pfad zum Downloads-Ordner
+    output_template = os.path.join(downloads_path, save_name + '.%(ext)s')
 
-    # Temporär herunterladen (aktuelles Verzeichnis)
-    print("Lade herunter...")
-    out_file = stream.download()
+    ydl_opts = {
+        'format': 'bestaudio/best',
+        'outtmpl': output_template,
+        'postprocessors': [{
+            'key': 'FFmpegExtractAudio',
+            'preferredcodec': 'mp3',
+            'preferredquality': '192',
+        }],
+        'quiet': False,  # zeigt Fortschritt an
+    }
 
-    # Pfade vorbereiten
-    downloads_path = str(Path.home() / "Downloads")  # Downloads-Ordner des Benutzers
-    mp3_file_path = os.path.join(downloads_path, save_name + ".mp3")
+    with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+        ydl.download([youtube_url])
 
-    print("Konvertiere in MP3...")
-    audio = AudioSegment.from_file(out_file)
-    audio.export(mp3_file_path, format="mp3")
-
-    # Originaldatei löschen (optional)
-    os.remove(out_file)
-
-    print(f"Fertig! Gespeichert unter: {mp3_file_path}")
+    print(f"✅ Fertig! Gespeichert unter: {downloads_path}/{save_name}.mp3")
 
 if __name__ == "__main__":
     url = input("Bitte YouTube-Link eingeben: ")
     save_name = input("Wie soll die MP3-Datei heißen? (Ohne .mp3 am Ende): ")
     download_audio_as_mp3(url, save_name)
+
